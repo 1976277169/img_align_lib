@@ -4,11 +4,9 @@
 #include "tracker.hpp"
 #include "planar_object_detector.hpp"
 #include "trace.hpp"
-#include <boost/program_options.hpp>
 
 using namespace cv;
 using namespace upm::pcr;
-namespace po = boost::program_options;
 
 const double TICKS_PER_SECOND       = (static_cast<double>(cvGetTickFrequency())*1.0e6);
 const double TICKS_PER_MILLISECOND  = (static_cast<double>(cvGetTickFrequency())*1.0e3);
@@ -340,43 +338,27 @@ main
 
   try
   {
-    // --------------------------------------------------------------
-    // Declare the supported program options.
-    po::options_description desc("Allowed options");
-    desc.add_options()
-      ("help", "produce help message")
-      ("output-name", po::value<std::string>(), "set the destination text file.")
-      ("video-file", po::value<std::string>(), "set the video file.")
-    ;
+	  // Declare the supported program options.
+	  const char* keys =
+	  {
+		  "{ i  video-file    |                                | Empty for capture from camera or video file name  | }"
+		  "{ o  output-name   |tracker_evaluation_output.txt   | Results in text file                              | }"
+		  "{ h  help          |                                | Produce help message                              | }"
+	  };
 
-    po::positional_options_description p;
-    p.add("input-name", -1);
+	  cv::CommandLineParser parser(argc, argv, keys);
+	  parser.printParams();
 
-    po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    po::notify(vm);
+	  if (!parser.get<std::string>("help").empty())
+	  {
+		  parser.printParams();
+		  return 1;
+	  }
 
-    if (vm.count("help"))
-    {
-        std::cout << desc << "\n";
-        return 1;
-    }
+	  video_file = parser.get<std::string>("video-file");
+	  use_video_file = !video_file.empty();
 
-    if (vm.count("video-file"))
-    {
-      use_video_file = true;
-      video_file     = vm["video-file"].as<std::string>();
-    }
-
-    if (vm.count("output-name"))
-    {
-      output_name = vm["output-name"].as<std::string>();
-    }
-    else
-    {
-      output_name = "tracker_evaluation_output.txt";
-    }
-
+	  output_name = parser.get<std::string>("output-name");
   }
   catch(std::exception& e)
   {

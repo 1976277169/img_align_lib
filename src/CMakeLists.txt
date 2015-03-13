@@ -15,11 +15,10 @@ SET(CMAKE_BUILD_TYPE Debug)
 #
 #ENABLE_TESTING()
 
-FIND_PACKAGE(OpenCV REQUIRED)
-FIND_PACKAGE(Boost REQUIRED)
+FIND_PACKAGE(OpenCV 2.4 REQUIRED)
 
-INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} C:/OpenCV2.1/include E:/Archivos\ de\ programa/boost/boost_1_44 /usr/include .)
-LINK_DIRECTORIES( ${OpenCV_LINKS_DIR} /usr/lib )
+INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} .)
+LINK_DIRECTORIES( ${OpenCV_LINKS_DIR}  )
 
 ADD_LIBRARY(img_align SHARED 
   image_pca_factorized_problem.hpp
@@ -82,7 +81,6 @@ TARGET_LINK_LIBRARIES(test_img_align
   ${OpenCV_LIBS}   
   #jpeg
   #tiff
-  boost_program_options
   img_align
 )
 
